@@ -290,6 +290,10 @@ def _categorize(files: List[str], category: Optional[str]) -> Tuple[str, List[st
 
 
 def main(argv: Optional[List[str]] = None) -> int:
+    # Windows 控制台默认 GBK：统一 UTF-8 输出，避免中文/替换字符编码崩溃
+    if hasattr(sys.stdout, "reconfigure"):
+        sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+        sys.stderr.reconfigure(encoding="utf-8", errors="replace")
     parser = argparse.ArgumentParser(
         description="固件发布：识别类型 → 复制到发布仓库 → 更新变更日志 → git 提交",
     )
