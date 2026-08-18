@@ -1,0 +1,14 @@
+{
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "firmware-release-skill",
+  "owner": {
+    "name": "KeGong BMS Team"
+  },
+  "plugins": [
+    {
+      "name": "firmware-release-skill",
+      "source": "./",
+      "description": "固件发布与归档：自动识别bcmu/bmu/hmi并发布到releases仓库"
+    }
+  ]
+}

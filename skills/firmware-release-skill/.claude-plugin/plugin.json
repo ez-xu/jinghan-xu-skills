@@ -1,0 +1,8 @@
+{
+  "name": "firmware-release-skill",
+  "version": "1.0.0",
+  "description": "固件发布与归档：自动识别bcmu/bmu/hmi并发布到releases仓库",
+  "author": {
+    "name": "KeGong BMS Team"
+  }
+}
