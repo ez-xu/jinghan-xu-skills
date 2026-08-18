@@ -241,6 +241,26 @@ def git_commit(repo_dir: Path, message: str, paths: Optional[List[str]] = None) 
     )
 
 
+def git_push(repo_dir: Path) -> subprocess.CompletedProcess:
+    """推送发布仓库到远程（git push）。
+
+    Args:
+        repo_dir: 发布仓库根目录（含 .git）。
+
+    Returns:
+        subprocess.CompletedProcess；失败时抛出 CalledProcessError。
+    """
+    if not (repo_dir / ".git").exists():
+        raise FileNotFoundError(f"不是 git 仓库：{repo_dir}")
+    return subprocess.run(
+        ["git", "push"],
+        cwd=str(repo_dir),
+        check=True,
+        capture_output=True,
+        text=True,
+    )
+
+
 # ---------------------------------------------------------------------------
 # CLI
 # ---------------------------------------------------------------------------
@@ -280,6 +300,8 @@ def main(argv: Optional[List[str]] = None) -> int:
                         help="目标同名文件存在时覆盖")
     parser.add_argument("--skip-commit", action="store_true",
                         help="只复制与更新日志，不执行 git 提交")
+    parser.add_argument("--push", action="store_true",
+                        help="提交后执行 git push 推送到远程（发布仓库需已配置远程）")
     parser.add_argument("--dry-run", action="store_true",
                         help="只打印将要执行的动作，不写任何文件")
     parser.add_argument("--message", default=None,
@@ -346,8 +368,18 @@ def main(argv: Optional[List[str]] = None) -> int:
         except (subprocess.CalledProcessError, FileNotFoundError) as exc:
             print(f"[WARN] git 提交失败：{exc}")
             return 1
+
+        # 6) 推送（可选）
+        if args.push:
+            try:
+                push_result = git_push(Path(args.repo))
+                print(f"[OK] 已推送到远程：{push_result.stdout.strip()[-200:] or '(无输出)'}")
+            except (subprocess.CalledProcessError, FileNotFoundError) as exc:
+                print(f"[WARN] git 推送失败（提交已生效，未推送）：{exc}")
+                return 1
     elif args.dry_run:
-        print("[DRY-RUN] 跳过复制/日志/提交")
+        print("[DRY-RUN] 跳过复制/日志/提交"
+              + ("/推送" if args.push else ""))
 
     print(f"[DONE] 发布完成 -> {release_dir}")
     return 0

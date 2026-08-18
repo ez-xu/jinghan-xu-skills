@@ -23,15 +23,17 @@
 3. **发布**：优先运行单入口脚本：
    ```bash
    python scripts/run_pipeline.py [--source-dir DIR] [--repo DIR] [--category X]
-                                    [--force] [--skip-commit] [--dry-run] [--note TEXT]
+                                    [--force] [--skip-commit] [--push] [--dry-run] [--note TEXT]
    ```
-   脚本完成：复制 → README 变更日志 → git 提交。同名冲突需用户确认后 `--force`。
-4. **报告**：向用户出示发布目标路径、文件名（含校验值）、README 条目与提交哈希。
+   脚本完成：复制 → README 变更日志 → git 提交 →（可选 --push 推送）。
+   同名冲突需用户确认后 `--force`。
+4. **报告**：向用户出示发布目标路径、文件名（含校验值）、README 条目、提交哈希（及推送结果）。
 
 ## Rules
 
 - 识别不一致（多文件跨类别）时报错，不静默选择。
 - 发布前核对产物时间戳（防增量编译跳过导致发布旧固件）。
-- 发布仓库是独立 git 仓库：不推送除非用户要求。
+- 发布仓库是独立 git 仓库：默认只提交不推送；用户要求推送（或 `--push`）时才推送。
+- 推送失败时提交已生效——如实报告，不回滚提交。
 - 失败即停，报告原因；不跳过任何一步。
 - 完整规范见 `SKILL.md`；命名与识别细节见 `references/naming.md`。

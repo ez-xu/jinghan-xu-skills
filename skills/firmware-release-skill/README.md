@@ -9,7 +9,7 @@
 - **最新发布发现**：自动从 Keil 工程 `Output/` 目录取最新 bin+hex 发布对
 - **同名冲突保护**：目标文件已存在时拒绝覆盖（默认），确认后 `--force`
 - **变更日志**：自动在 README `## 变更日志` 插入条目（同日合并、含校验值指纹）
-- **git 提交**：按命名自动生成提交信息并提交发布仓库
+- **git 提交与推送**：按命名自动生成提交信息并提交发布仓库；`--push` 可选推送到远程
 
 ## 安装
 
@@ -64,6 +64,7 @@ cp -R firmware-release-skill .cursor/skills/firmware-release-skill
 cd firmware-release-skill
 python scripts/run_pipeline.py                       # 默认源目录最新发布
 python scripts/run_pipeline.py --dry-run             # 演练
+python scripts/run_pipeline.py --push                # 发布并推送到远程
 python scripts/run_pipeline.py --source-dir DIR --repo DIR --note "改动说明"
 ```
 

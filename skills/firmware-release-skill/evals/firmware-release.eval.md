@@ -52,6 +52,12 @@ python3 scripts/run_evals.py --json
       "criterion": "端到端：发现发布对→自动分类→复制到正确子目录",
       "type": "command",
       "cmd": "python -c \"import sys,tempfile,pathlib; sys.path.insert(0,'scripts'); import release; d=tempfile.mkdtemp(); p=pathlib.Path(d); (p/'BCMU_V5.1.7.12_\\u7ec499_20260818_\\u6821\\u9a8c0x11223344.bin').write_bytes(b'\\x00'*16); (p/'BCMU_V5.1.7.12_\\u7ec499_20260818_\\u6821\\u9a8c0x11223344.hex').write_text('x'); pairs=release.find_published_pairs(d); assert len(pairs)==1; cat,_=release._categorize([pairs[0]['bin']],None); assert cat=='bcmu'; release.publish_files([pairs[0]['bin']], release.resolve_release_dir(p/'repo','bcmu')); assert (p/'repo'/'bcmu'/'BCMU_V5.1.7.12_\\u7ec499_20260818_\\u6821\\u9a8c0x11223344.bin').exists()\""
+    },
+    {
+      "id": "push-remote",
+      "text": "端到端：发布 + git 提交 + 推送到远程（本地 bare 仓库模拟）",
+      "type": "command",
+      "cmd": "python -c \"import sys,tempfile,pathlib,subprocess; sys.path.insert(0,'scripts'); import release; d=tempfile.mkdtemp(); src=pathlib.Path(d)/'src'; repo=pathlib.Path(d)/'repo'; bare=pathlib.Path(d)/'bare.git'; src.mkdir(); (src/'BCMU_V5.1.7.12_\\u7ec499_20260818_\\u6821\\u9a8c0x11223344.bin').write_bytes(b'x'*8); (src/'BCMU_V5.1.7.12_\\u7ec499_20260818_\\u6821\\u9a8c0x11223344.hex').write_text('x'); subprocess.run(['git','init','-q','--bare',str(bare)],check=True); subprocess.run(['git','init','-q',str(repo)],check=True); subprocess.run(['git','config','user.email','t@t'],cwd=str(repo),check=True); subprocess.run(['git','config','user.name','t'],cwd=str(repo),check=True); subprocess.run(['git','remote','add','origin',str(bare)],cwd=str(repo),check=True); subprocess.run(['git','commit','--allow-empty','-q','-m','seed'],cwd=str(repo),check=True); subprocess.run(['git','push','-q','-u','origin','HEAD'],cwd=str(repo),check=True); rc=release.main(['--source-dir',str(src),'--repo',str(repo),'--push']); assert rc==0; assert (bare/'HEAD').exists()\""
     }
   ],
   "golden": [

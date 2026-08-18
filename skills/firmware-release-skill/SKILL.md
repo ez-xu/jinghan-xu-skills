@@ -64,7 +64,8 @@ metadata:
    `- **feat**: 发布 BCMU V5.1.7.12 组20 固件（`bcmu`）`
    - 同日已有条目块则合并进同一日期块；可附加改动摘要说明。
 3. **git 提交**发布仓库：`feat(bcmu): 发布 BCMU V5.1.7.12 组20 固件`。
-   - 用户未要求时不推送；要求推送时执行 `git push`。
+   - 默认只提交不推送；用户要求推送（或加 `--push`）时执行 `git push`。
+   - 推送失败时提交仍已生效，如实报告并退出 1，不要回滚提交。
 
 ## 命令
 
@@ -72,8 +73,8 @@ metadata:
 
 ```bash
 python scripts/run_pipeline.py [--source-dir DIR] [--repo DIR] [--category X]
-                                 [--force] [--skip-commit] [--dry-run] [--message M] [--note TEXT]
-                                 [file...]
+                                 [--force] [--skip-commit] [--push] [--dry-run]
+                                 [--message M] [--note TEXT] [file...]
 ```
 
 | 参数 | 作用 |
@@ -83,6 +84,7 @@ python scripts/run_pipeline.py [--source-dir DIR] [--repo DIR] [--category X]
 | `--category` | 显式分类 `bcmu`/`bmu`/`hmi`，跳过自动识别 |
 | `--force` | 目标同名文件已存在时覆盖 |
 | `--skip-commit` | 只复制与更新日志，不提交 |
+| `--push` | 提交后执行 `git push` 推送到远程（发布仓库需已配置 remote） |
 | `--dry-run` | 演练：只打印动作，不写任何文件 |
 | `--message` | 自定义提交信息 |
 | `--note` | README 条目附加说明（如"扩展故障补全 8 位"） |
