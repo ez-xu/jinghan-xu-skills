@@ -231,13 +231,15 @@ def git_commit(repo_dir: Path, message: str, paths: Optional[List[str]] = None) 
     if not (repo_dir / ".git").exists():
         raise FileNotFoundError(f"不是 git 仓库：{repo_dir}")
     add_args = ["git", "add", "-A"] if paths is None else ["git", "add", *paths]
-    subprocess.run(add_args, cwd=str(repo_dir), check=True, capture_output=True, text=True)
+    subprocess.run(add_args, cwd=str(repo_dir), check=True, capture_output=True,
+                   text=True, errors="replace")
     return subprocess.run(
         ["git", "commit", "-m", message],
         cwd=str(repo_dir),
         check=True,
         capture_output=True,
         text=True,
+        errors="replace",
     )
 
 
@@ -258,6 +260,7 @@ def git_push(repo_dir: Path) -> subprocess.CompletedProcess:
         check=True,
         capture_output=True,
         text=True,
+        errors="replace",
     )
 
 
@@ -364,7 +367,7 @@ def main(argv: Optional[List[str]] = None) -> int:
         try:
             result = git_commit(Path(args.repo), message)
             print(f"[OK] 已提交：{message}")
-            print(result.stdout.strip()[-400:])
+            print((result.stdout or "").strip()[-400:])
         except (subprocess.CalledProcessError, FileNotFoundError) as exc:
             print(f"[WARN] git 提交失败：{exc}")
             return 1
@@ -373,7 +376,7 @@ def main(argv: Optional[List[str]] = None) -> int:
         if args.push:
             try:
                 push_result = git_push(Path(args.repo))
-                print(f"[OK] 已推送到远程：{push_result.stdout.strip()[-200:] or '(无输出)'}")
+                print(f"[OK] 已推送到远程：{(push_result.stdout or '').strip()[-200:] or '(无输出)'}")
             except (subprocess.CalledProcessError, FileNotFoundError) as exc:
                 print(f"[WARN] git 推送失败（提交已生效，未推送）：{exc}")
                 return 1
