@@ -1,2 +1,0 @@
-AppManagerSetup_1.0.3.21_release.exe
-AppManagerSetup_1.0.2.18_release.exe
